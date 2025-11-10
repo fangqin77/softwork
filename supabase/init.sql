@@ -7,6 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- 1. 用户表（profiles）
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  email TEXT NOT NULL,
   username TEXT NOT NULL UNIQUE,
   avatar_url TEXT DEFAULT 'https://picsum.photos/200',
   college TEXT NOT NULL DEFAULT '未填写',
@@ -80,8 +81,8 @@ CREATE TABLE IF NOT EXISTS collections (
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, username, college, grade, role)
-  VALUES (NEW.id, '用户' || SUBSTRING(NEW.id::TEXT FROM 1 FOR 6), '未填写', '未填写', 'student');
+  INSERT INTO public.profiles (id, email, username, college, grade, role)
+  VALUES (NEW.id, NEW.email, '用户' || SUBSTRING(NEW.id::TEXT FROM 1 FOR 6), '未填写', '未填写', 'student');
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
